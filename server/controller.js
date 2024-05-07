@@ -1,5 +1,17 @@
 const userModel = require("./model/userModel")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
+//Enviroment variable
+const JWT_TOKEN = process.env.JWT_TOKEN
+
+
+const token = async (username) => {
+    return jwt.sign({ username }, JWT_TOKEN, {
+        expiresIn: "1hr"
+    })
+
+}
 
 async function signUpRender (req, res) {
     const { username, email, password } = req.body
@@ -18,7 +30,19 @@ async function signUpRender (req, res) {
         })
     }
     const newUser = new userModel(bodyPayload)
-    newUser.save()
+    await newUser.save()
+
+    const generatedToken = token(username)
+
+    res.json({
+        message: `User created successfully, \n
+        Welcome ${username}`,
+
+        generatedToken
+
+    })
+    
+
    } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -45,9 +69,15 @@ async function signUpRender (req, res) {
                 })
             }
 
+            const generatedToken = token(username)
+
             res.status(200).json({
-                message: "Login successful"
+                message: "Login successful",
+
+                generatedToken
             })
+
+
             
         }
         catch (error) {

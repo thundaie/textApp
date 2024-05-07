@@ -5,8 +5,8 @@ const helmet = require("helmet")
 const limiter = require("express-rate-limiter")
 require("dotenv").config()
 const { connectDatabase } = require("./connect")
-const signIn = require("./signin")
-const signUp = require("./signup")
+const signIn = require("./routers/signin6epd")
+const signUp = require("./routers/signup")
 
 
 const PORT = process.env.PORT || 2000

@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
-const { signInRender } = require("./controller")
+const { signInRender } = require("../controller")
+const { signInValidator } = require("../validator/validator")
 
 
 router.get("/", (req, res) => {
