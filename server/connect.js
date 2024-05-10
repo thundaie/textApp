@@ -1,10 +1,10 @@
 const mongoose = require("mongoose")
 require("dotenv").config()
 
-
 const CONNECTION_URI = process.env.CONNECTION_URI
 
-function connectDatabase(CONNECTION_URI){
+
+ function connectDatabase(){
     mongoose.connect(CONNECTION_URI)
 
     mongoose.connection.on("connected", () => {
@@ -16,6 +16,6 @@ function connectDatabase(CONNECTION_URI){
     })
 }
 
-module.exports = connectDatabase
+module.exports = { connectDatabase }
 
 
