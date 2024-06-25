@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { baseUrl, postRequest } from "../src/utils/services";
 
 
@@ -16,11 +16,30 @@ export const AuthContextProvider = ({children}) => {
         password: ""
     })
 
+    const [logInError, setlogInError] = useState(null)
+    const [isLogInLoading, setisLogInLoading] = useState(false)
+
+    const [logInInfo, setLogInInfo] = useState({
+        username: "",
+        password: ""
+    })
+
+    useEffect(() => {
+        const user = localStorage.getItem("user")
+
+        setUser(JSON.parse(user))
+    })
+
     const updateRegisterInfo = useCallback((info) => {
         setRegisterInfo(info)
     }, [])
 
-    const registerUser = useCallback(async() => {
+    const updateLogInInfo = useCallback((info) => {
+        setLogInInfo(info)
+    }, [])
+
+    const registerUser = useCallback(async(e) => {
+        e.preventDefault()
         setIsRegisterLoading(true)
         setRegisterError(null)
 
@@ -34,12 +53,51 @@ export const AuthContextProvider = ({children}) => {
         localStorage.setItem("user", JSON.stringify(response))
 
         setUser(response)
-    }, [])
+    }, [registerInfo])
+
+
+
+    const logInUser = useCallback(async (e) => {
+        e.preventDefault()
+        setisLogInLoading(true)
+        setlogInError(null)
+
+        const response = await postRequest(
+            `${baseUrl}/users/signin`, 
+            JSON.stringify(logInInfo)
+        )
+
+        setisLogInLoading(false)
+
+        if(response.error){
+            return setlogInError(response)
+        }
+        localStorage.setItem("user", JSON.stringify(response))
+
+        setUser(response)
+
+
+
+    },[logInInfo])
+
+    const logOutUser = useCallback(() => {
+        localStorage.removeItem("user")
+        setUser(null)
+    },[])
 
     return <AuthContext.Provider value={{
         user,
         registerInfo,
         updateRegisterInfo,
+        registerError,
+        registerUser,
+        isRegisterLoading,
+        logOutUser,
+        logInUser,
+        logInError,
+        logInInfo,
+        updateLogInInfo,
+        isLogInLoading
     }}>
         {children}
     </AuthContext.Provider>
